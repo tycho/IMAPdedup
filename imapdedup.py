@@ -313,7 +313,7 @@ def process(options, mboxes):
         if not options.no_close:
             server.close()
     except ImapDedupException as e:
-        print >> sys.stderr, "Error:", e
+        print("Error:", e)
     finally:
         server.logout()
 
