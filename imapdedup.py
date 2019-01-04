@@ -236,7 +236,7 @@ def process(options, mboxes):
             print("%s message(s) currently marked as deleted in %s" % (numdeleted or "No", mbox))
 
             # ...and get a list of the ones that aren't deleted. That's what we'll use.
-            msgnums = check_response(server.search(None, 'UNDELETED'))[0].split()
+            msgnums = check_response(server.search(None, 'UNDELETED'))[0].decode('utf-8').split()
             print("%s others in %s" % (len(msgnums), mbox))
 
             chunkSize = 100
@@ -253,7 +253,7 @@ def process(options, mboxes):
                 # and parse them.
                 for ci in range(0, len(msgnums_in_chunk)):
                     mnum = msgnums_in_chunk[ci]
-                    mp = p.parsestr(ms[ci * 2][1])
+                    mp = p.parsestr(ms[ci * 2][1].decode('utf-8'))
                     if options.verbose:
                         print("Checking %s message %s" % (mbox, mnum))
 
