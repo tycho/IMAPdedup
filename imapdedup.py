@@ -159,12 +159,13 @@ def get_message_id(parsed_message,
 
 
 def print_message_info(parsed_message):
-    print("From: " +    utf8_header(parsed_message,'From'))
-    print("To: " +      utf8_header(parsed_message,'To'))
-    print("Cc: " +      utf8_header(parsed_message,'Cc'))
-    print("Bcc: " +     utf8_header(parsed_message,'Bcc'))
-    print("Subject: " + utf8_header(parsed_message,'Subject'))
-    print("Date: " +    utf8_header(parsed_message,'Date'))
+    print("From: " +    utf8_header(parsed_message,'From').decode('utf-8'))
+    print("To: " +      utf8_header(parsed_message,'To').decode('utf-8'))
+    print("Cc: " +      utf8_header(parsed_message,'Cc').decode('utf-8'))
+    print("Bcc: " +     utf8_header(parsed_message,'Bcc').decode('utf-8'))
+    print("Subject: " + utf8_header(parsed_message,'Subject').decode('utf-8'))
+    print("Date: " +    utf8_header(parsed_message,'Date').decode('utf-8'))
+    print("Message-ID: " +    utf8_header(parsed_message,'Message-ID').decode('utf-8'))
     print("")
 
 
