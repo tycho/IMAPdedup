@@ -231,12 +231,12 @@ def process(options, mboxes):
             print("There are %d messages in %s." % (int(msgs), mbox))
 
             # Check how many messages are already marked 'deleted'...
-            deleted = check_response(server.search(None, 'DELETED'))[0].split()
+            deleted = check_response(server.uid('SEARCH', None, 'DELETED'))[0].split()
             numdeleted = len(deleted)
             print("%s message(s) currently marked as deleted in %s" % (numdeleted or "No", mbox))
 
             # ...and get a list of the ones that aren't deleted. That's what we'll use.
-            msgnums = check_response(server.search(None, 'UNDELETED'))[0].decode('utf-8').split()
+            msgnums = check_response(server.uid('SEARCH', None, 'UNDELETED'))[0].decode('utf-8').split()
             print("%s others in %s" % (len(msgnums), mbox))
 
             chunkSize = 100
@@ -246,7 +246,7 @@ def process(options, mboxes):
                 msgnums_in_chunk = msgnums[i:i + chunkSize]
                 message_ids = ','.join(msgnums_in_chunk)
                 # Get the header of each message
-                ms = check_response(server.fetch(message_ids, '(RFC822.HEADER)'))
+                ms = check_response(server.uid('FETCH', message_ids, '(RFC822.HEADER)'))
                 if options.verbose:
                     print ("Batch starting at item %d" % i)
 
@@ -301,13 +301,13 @@ def process(options, mboxes):
                     if options.verbose: print("(in batches of %d)" % chunkSize)
                     for i in range(0, len(msgs_to_delete), chunkSize):
                         message_ids = ','.join(msgs_to_delete[i:i + chunkSize])
-                        check_response(server.store(message_ids, '+FLAGS', r'(\Deleted)'))
+                        check_response(server.uid('MOVE', message_ids, '"Trash"'))
                         if options.verbose:
                             print("Batch starting at item %d marked." % i)
                     print("Confirming new numbers...")
-                    deleted = check_response(server.search(None, 'DELETED'))[0].split()
+                    deleted = check_response(server.uid('SEARCH', None, 'DELETED'))[0].split()
                     numdeleted = len(deleted)
-                    undeleted = check_response(server.search(None, 'UNDELETED'))[0].split()
+                    undeleted = check_response(server.uid('SEARCH', None, 'UNDELETED'))[0].split()
                     numundel = len(undeleted)
                     print("There are now %s messages marked as deleted and %s others in %s." % (numdeleted, numundel, mbox))
         if not options.no_close:
