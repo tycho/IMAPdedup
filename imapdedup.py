@@ -62,6 +62,7 @@ def get_arguments(args):
     parser.add_option("-u", "--user",  dest='user',  help='IMAP user name')
     parser.add_option("-w", "--password", dest='password',  help='IMAP password (Will prompt if not specified)')
     parser.add_option("-v", "--verbose", dest="verbose", action="store_true", help="Verbose mode")
+    parser.add_option("--trace", dest="trace", action="store_true", help="Enable IMAP protocol tracing")
     parser.add_option("-n", "--dry-run", dest="dry_run", action="store_true",
                         help="Don't actually do anything, just report what would be done")
     parser.add_option("-c", "--checksum", dest="use_checksum", action="store_true",
@@ -73,7 +74,7 @@ def get_arguments(args):
     parser.add_option("-l", "--list", dest="just_list", action="store_true",
                                             help="Just list mailboxes")
 
-    parser.set_defaults(verbose=False, ssl=False, dry_run=False, no_close=False, just_list=False)
+    parser.set_defaults(verbose=False, ssl=False, dry_run=False, no_close=False, just_list=False, trace=False)
     (options, mboxes) = parser.parse_args(args)
     if ((not options.server) or (not options.user)) and not options.process:
         sys.stderr.write("\nError: Must specify server, user, and at least one mailbox.\n\n")
@@ -186,6 +187,8 @@ def process(options, mboxes):
         else:
             # Use the default, which will be different depending on SSL choice
             server = serverclass(options.server)
+        if options.trace:
+            server.debug = 4
     except socket.error as e:
         sys.stderr.write("\nFailed to connect to server. Might be host, port or SSL settings?\n")
         sys.stderr.write("%s\n\n" % e)
