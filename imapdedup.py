@@ -245,20 +245,37 @@ def process(options, mboxes):
             chunkSize = 100
             if options.verbose: print ("Reading the others... (in batches of %d)" % chunkSize)
 
+            required_fields = ['From', 'To', 'Cc', 'Bcc', 'Subject', 'Date', 'Message-ID']
+            response_rex_str = r"\s*\d+\s+\(UID\s+(\d+)\s+BODY.*"
+            response_rex = re.compile(response_rex_str, re.I)
+
             for i in range(0, len(msgnums), chunkSize):
                 msgnums_in_chunk = msgnums[i:i + chunkSize]
                 message_ids = ','.join(msgnums_in_chunk)
                 # Get the header of each message
-                ms = check_response(server.uid('FETCH', message_ids, '(RFC822.HEADER)'))
+                ms = check_response(server.uid('FETCH', message_ids, '(UID BODY[HEADER.FIELDS (%s)])' % (' '.join(required_fields))))
                 if options.verbose:
                     print ("Batch starting at item %d" % i)
 
                 # and parse them.
-                for ci in range(0, len(msgnums_in_chunk)):
-                    mnum = msgnums_in_chunk[ci]
-                    mp = p.parsestr(ms[ci * 2][1].decode('utf-8'))
+                for message in ms:
+                    if not isinstance(message, tuple):
+                        continue
+                    if len(message) < 2:
+                        continue
+
+                    response_str = message[0].decode('utf-8')
+                    header_str = message[1].decode('utf-8')
+
+                    response = response_rex.match(response_str)
+                    if not response:
+                        continue
+                    mnum = response.group(1)
+
+                    mp = p.parsestr(header_str)
                     if options.verbose:
-                        print("Checking %s message %s" % (mbox, mnum))
+                        print("=== MESSAGE UID %s ===" % (mnum,))
+                        print_message_info(mp)
 
                     # Record the message-ID header (or generate one from other headers)
                     msg_id = get_message_id(mp, options.use_checksum, options.use_id_in_checksum)
