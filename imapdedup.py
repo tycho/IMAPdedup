@@ -130,14 +130,14 @@ def get_message_id(parsed_message,
     try:
         if options_use_checksum:
             md5 = hashlib.md5()
-            md5.update("From:"    + utf8_header(parsed_message,'From'))
-            md5.update("To:"      + utf8_header(parsed_message,'To'))
-            md5.update("Subject:" + utf8_header(parsed_message,'Subject'))
-            md5.update("Date:"    + utf8_header(parsed_message,'Date'))
-            md5.update("Cc:"      + utf8_header(parsed_message,'Cc'))
-            md5.update("Bcc:"     + utf8_header(parsed_message,'Bcc'))
+            md5.update(b"From:"    + utf8_header(parsed_message,'From'))
+            md5.update(b"To:"      + utf8_header(parsed_message,'To'))
+            md5.update(b"Subject:" + utf8_header(parsed_message,'Subject'))
+            md5.update(b"Date:"    + utf8_header(parsed_message,'Date'))
+            md5.update(b"Cc:"      + utf8_header(parsed_message,'Cc'))
+            md5.update(b"Bcc:"     + utf8_header(parsed_message,'Bcc'))
             if options_use_id_in_checksum:
-                md5.update("Message-ID:" + utf8_header(parsed_message,'Message-ID'))
+                md5.update(b"Message-ID:" + utf8_header(parsed_message,'Message-ID'))
             msg_id = md5.hexdigest()
             # print(msg_id)
         else:
